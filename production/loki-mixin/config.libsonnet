@@ -1,5 +1,5 @@
 {
     _config+:: {
-        clusterLabel: 'source_prometheus'
+        clusterLabel: 'cluster'
     },
 }
