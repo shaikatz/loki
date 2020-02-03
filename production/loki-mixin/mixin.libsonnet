@@ -1,3 +1,4 @@
+(import 'config.libsonnet') +
 (import 'dashboards.libsonnet') +
 (import 'dashboard-loki-operational.libsonnet') +
 (import 'dashboard-loki-logs.libsonnet') +

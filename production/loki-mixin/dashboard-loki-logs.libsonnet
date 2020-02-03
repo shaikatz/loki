@@ -1,4 +1,5 @@
 {
+  local clusterLabel = $._config.clusterLabel,
   dashboards+: {
     'loki-logs.json': {
       annotations: {
@@ -62,7 +63,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'sum(go_goroutines{cluster="$cluster", namespace="$namespace", instance=~"$deployment.*", instance=~"$pod"})',
+              expr: 'sum(go_goroutines{%s="$cluster", namespace="$namespace", instance=~"$deployment.*", instance=~"$pod"})' % clusterLabel,
               refId: 'A',
             },
           ],
@@ -147,7 +148,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'sum(go_gc_duration_seconds{cluster="$cluster", namespace="$namespace", instance=~"$deployment.*", instance=~"$pod"}) by (quantile)',
+              expr: 'sum(go_gc_duration_seconds{%s="$cluster", namespace="$namespace", instance=~"$deployment.*", instance=~"$pod"}) by (quantile)' % clusterLabel,
               legendFormat: '{{quantile}}',
               refId: 'A',
             },
@@ -233,7 +234,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'sum(rate(container_cpu_usage_seconds_total{cluster="$cluster", namespace="$namespace", pod_name=~"$deployment.*", pod_name=~"$pod", container_name=~"$container"}[5m]))',
+              expr: 'sum(rate(container_cpu_usage_seconds_total{%s="$cluster", namespace="$namespace", pod_name=~"$deployment.*", pod_name=~"$pod", container_name=~"$container"}[5m]))'  % clusterLabel,
               refId: 'A',
             },
           ],
@@ -318,7 +319,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'sum(container_memory_working_set_bytes{cluster="$cluster", namespace="$namespace", pod_name=~"$deployment.*", pod_name=~"$pod", container_name=~"$container"})',
+              expr: 'sum(container_memory_working_set_bytes{%s="$cluster", namespace="$namespace", pod_name=~"$deployment.*", pod_name=~"$pod", container_name=~"$container"})'  % clusterLabel,
               refId: 'A',
             },
           ],
@@ -403,7 +404,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'sum(rate(container_network_transmit_bytes_total{cluster="$cluster", namespace="$namespace", pod_name=~"$deployment.*", pod_name=~"$pod"}[5m]))',
+              expr: 'sum(rate(container_network_transmit_bytes_total{%s="$cluster", namespace="$namespace", pod_name=~"$deployment.*", pod_name=~"$pod"}[5m]))'  % clusterLabel,
               refId: 'A',
             },
           ],
@@ -488,7 +489,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'sum(rate(container_network_receive_bytes_total{cluster="$cluster", namespace="$namespace", pod_name=~"$deployment.*", pod_name=~"$pod"}[5m]))',
+              expr: 'sum(rate(container_network_receive_bytes_total{%s="$cluster", namespace="$namespace", pod_name=~"$deployment.*", pod_name=~"$pod"}[5m]))'  % clusterLabel,
               refId: 'A',
             },
           ],
@@ -573,7 +574,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'increase(kube_pod_container_status_last_terminated_reason{cluster="$cluster", namespace="$namespace", pod=~"$deployment.*", pod=~"$pod", container=~"$container"}[30m]) > 0',
+              expr: 'increase(kube_pod_container_status_last_terminated_reason{%s="$cluster", namespace="$namespace", pod=~"$deployment.*", pod=~"$pod", container=~"$container"}[30m]) > 0'  % clusterLabel,
               legendFormat: '{{reason}}',
               refId: 'A',
             },
@@ -659,7 +660,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'sum(rate(promtail_custom_bad_words_total{cluster="$cluster", exported_namespace="$namespace", exported_instance=~"$deployment.*", exported_instance=~"$pod", container_name=~"$container"}[5m])) by (level)',
+              expr: 'sum(rate(promtail_custom_bad_words_total{%s="$cluster", exported_namespace="$namespace", exported_instance=~"$deployment.*", exported_instance=~"$pod", container_name=~"$container"}[5m])) by (level)'  % clusterLabel,
               legendFormat: '{{level}}',
               refId: 'A',
             },
@@ -762,7 +763,7 @@
           steppedLine: false,
           targets: [
             {
-              expr: 'sum(rate({cluster="$cluster", namespace="$namespace", instance=~"$deployment.*", instance=~"$pod", container_name=~"$container", level=~"$level"}$filter[5m])) by (level)',
+              expr: 'sum(rate({%s="$cluster", namespace="$namespace", instance=~"$deployment.*", instance=~"$pod", container_name=~"$container", level=~"$level"}$filter[5m])) by (level)'  % clusterLabel,
               intervalFactor: 3,
               legendFormat: '{{level}}',
               refId: 'A',
@@ -825,7 +826,7 @@
           },
           targets: [
             {
-              expr: '{cluster="$cluster", namespace="$namespace", instance=~"$deployment.*", instance=~"$pod", container_name=~"$container", level=~"$level"} $filter',
+              expr: '{%s="$cluster", namespace="$namespace", instance=~"$deployment.*", instance=~"$pod", container_name=~"$container", level=~"$level"} $filter'  % clusterLabel,
               refId: 'A',
             },
           ],
@@ -950,14 +951,14 @@
               value: 'distributor',
             },
             datasource: 'ops-tools1',
-            definition: 'label_values(kube_deployment_created{cluster="$cluster", namespace="$namespace"}, deployment)',
+            definition: 'label_values(kube_deployment_created{%s="$cluster", namespace="$namespace"}, deployment)' % clusterLabel,
             hide: 0,
             includeAll: false,
             label: null,
             multi: false,
             name: 'deployment',
             options: [],
-            query: 'label_values(kube_deployment_created{cluster="$cluster", namespace="$namespace"}, deployment)',
+            query: 'label_values(kube_deployment_created{%s="$cluster", namespace="$namespace"}, deployment)' % clusterLabel,
             refresh: 1,
             regex: '',
             skipUrlSync: false,
@@ -975,14 +976,14 @@
               value: '$__all',
             },
             datasource: 'ops-tools1',
-            definition: 'label_values(kube_pod_container_info{cluster="$cluster", namespace="$namespace", pod=~"$deployment.*"}, pod)',
+            definition: 'label_values(kube_pod_container_info{%s="$cluster", namespace="$namespace", pod=~"$deployment.*"}, pod)' % clusterLabel, 
             hide: 0,
             includeAll: true,
             label: null,
             multi: false,
             name: 'pod',
             options: [],
-            query: 'label_values(kube_pod_container_info{cluster="$cluster", namespace="$namespace", pod=~"$deployment.*"}, pod)',
+            query: 'label_values(kube_pod_container_info{%s="$cluster", namespace="$namespace", pod=~"$deployment.*"}, pod)' % clusterLabel,
             refresh: 1,
             regex: '',
             skipUrlSync: false,
@@ -1000,14 +1001,14 @@
               value: '$__all',
             },
             datasource: 'ops-tools1',
-            definition: 'label_values(kube_pod_container_info{cluster="$cluster", namespace="$namespace", pod=~"$pod", pod=~"$deployment.*"}, container)',
+            definition: 'label_values(kube_pod_container_info{%s="$cluster", namespace="$namespace", pod=~"$pod", pod=~"$deployment.*"}, container)' % clusterLabel,
             hide: 0,
             includeAll: true,
             label: null,
             multi: false,
             name: 'container',
             options: [],
-            query: 'label_values(kube_pod_container_info{cluster="$cluster", namespace="$namespace", pod=~"$pod", pod=~"$deployment.*"}, container)',
+            query: 'label_values(kube_pod_container_info{%s="$cluster", namespace="$namespace", pod=~"$pod", pod=~"$deployment.*"}, container)' % clusterLabel,
             refresh: 1,
             regex: '',
             skipUrlSync: false,
